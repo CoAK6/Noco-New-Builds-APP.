@@ -17,18 +17,48 @@ struct ContentView: View {
                 WelcomeView()
                     .environmentObject(authService)
             case .authenticating:
-                LoadingView(message: "Signing you in...")
+                VStack {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .tint(.blue)
+                    
+                    Text("Authenticating...")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .padding(.top)
+                    
+                    Text("Current State: Authenticating")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.top, 4)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemBackground))
             case .authenticated(let user):
                 if user.isProfileComplete {
                     MainTabView()
                         .environmentObject(authService)
                 } else {
+                    VStack {
+                        Text("DEBUG: User authenticated but profile incomplete")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .padding()
+                        
+                        ProfileCompletionView()
+                            .environmentObject(authService)
+                    }
+                }
+            case .registrationRequired:
+                VStack {
+                    Text("DEBUG: Registration required state")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                        .padding()
+                    
                     ProfileCompletionView()
                         .environmentObject(authService)
                 }
-            case .registrationRequired:
-                ProfileCompletionView()
-                    .environmentObject(authService)
             }
         }
     }

@@ -244,10 +244,16 @@ struct ProfileCompletionView: View {
             do {
                 let partialUser = getPartialUser()
                 try await authService.completeProfile(registrationData: registrationData, partialUser: partialUser)
+                
+                await MainActor.run {
+                    isSubmitting = false
+                    print("DEBUG: Profile completion successful, isSubmitting set to false")
+                }
             } catch {
                 await MainActor.run {
                     errors = [error.localizedDescription]
                     isSubmitting = false
+                    print("DEBUG: Profile completion failed: \(error.localizedDescription)")
                 }
             }
         }
