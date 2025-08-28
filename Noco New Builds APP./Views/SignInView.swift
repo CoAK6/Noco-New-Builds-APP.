@@ -171,7 +171,14 @@ struct SignInView: View {
         guard !email.isEmpty, !password.isEmpty else { return }
         
         Task {
-            try await authService.signIn(email: email, password: password)
+            do {
+                try await authService.signIn(email: email, password: password)
+                print("DEBUG: Sign in successful")
+            } catch {
+                await MainActor.run {
+                    print("DEBUG: Sign in failed with error: \(error)")
+                }
+            }
         }
     }
     

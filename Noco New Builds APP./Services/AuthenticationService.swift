@@ -19,6 +19,23 @@ class AuthenticationService: ObservableObject {
     private let apiService = APIService.shared
     private let keychain = KeychainService.shared
     
+    // Simple password storage for demo (in real app, this would be handled by backend)
+    private let passwordKey = "stored_passwords"
+    private var storedPasswords: [String: String] {
+        get {
+            if let data = UserDefaults.standard.data(forKey: passwordKey),
+               let passwords = try? JSONDecoder().decode([String: String].self, from: data) {
+                return passwords
+            }
+            return [:]
+        }
+        set {
+            if let data = try? JSONEncoder().encode(newValue) {
+                UserDefaults.standard.set(data, forKey: passwordKey)
+            }
+        }
+    }
+    
     init() {
         checkStoredAuthentication()
     }
@@ -27,12 +44,29 @@ class AuthenticationService: ObservableObject {
     private func checkStoredAuthentication() {
         // Check if we have stored credentials
         if let storedUser = keychain.getStoredUser() {
-            currentUser = storedUser
-            authState = .authenticated(storedUser)
-            isAuthenticated = true
+            print("DEBUG: Found stored user on app launch: \(storedUser.email)")
+            print("DEBUG: Stored user profile complete: \(storedUser.isProfileComplete)")
+            
+            if storedUser.isProfileComplete {
+                currentUser = storedUser
+                authState = .authenticated(storedUser)
+                isAuthenticated = true
+                print("DEBUG: Auto-authenticated user on app launch")
+            } else {
+                let partialUser = PartialUser(
+                    id: storedUser.id,
+                    email: storedUser.email,
+                    firstName: storedUser.firstName,
+                    lastName: storedUser.lastName,
+                    profileImageUrl: storedUser.profileImageUrl
+                )
+                authState = .registrationRequired(partialUser: partialUser)
+                print("DEBUG: Found incomplete user, requiring registration")
+            }
         } else {
             authState = .unauthenticated
             isAuthenticated = false
+            print("DEBUG: No stored user found, starting unauthenticated")
         }
     }
     
@@ -48,6 +82,12 @@ class AuthenticationService: ObservableObject {
             // In a real implementation, this would make an API call to your auth provider
             // For now, we'll simulate the process
             try await simulateNetworkDelay()
+            
+            // Store password for later sign-in (in real app, this would be hashed and stored securely)
+            var passwords = storedPasswords
+            passwords[email.lowercased()] = password
+            storedPasswords = passwords
+            print("DEBUG: Password stored for email: \(email)")
             
             // Create partial user that needs profile completion
             let partialUser = PartialUser(
@@ -84,6 +124,15 @@ class AuthenticationService: ObservableObject {
         do {
             // Simulate API call
             try await simulateNetworkDelay()
+            
+            // Validate password first
+            let passwords = storedPasswords
+            guard let storedPassword = passwords[email.lowercased()],
+                  storedPassword == password else {
+                print("DEBUG: Password validation failed for email: \(email)")
+                throw AuthenticationError.invalidCredentials
+            }
+            print("DEBUG: Password validation successful for email: \(email)")
             
             // Check if this is a returning user with complete profile
             if let existingUser = getExistingUser(email: email) {
@@ -176,15 +225,20 @@ class AuthenticationService: ObservableObject {
             let completeUser = partialUser?.toCompleteUser(with: registrationData) ?? 
                                createNewUser(from: registrationData)
             
+            print("DEBUG: Profile completion - Created complete user: \(completeUser.email)")
+            print("DEBUG: Profile completion - User is complete: \(completeUser.isProfileComplete)")
+            
             await MainActor.run {
                 currentUser = completeUser
                 authState = .authenticated(completeUser)
                 isAuthenticated = true
                 isLoading = false
+                print("DEBUG: Profile completion - Auth state set to authenticated")
             }
             
             // Store user credentials
             keychain.storeUser(completeUser)
+            print("DEBUG: Profile completion - User stored in keychain")
             
         } catch {
             await MainActor.run {
