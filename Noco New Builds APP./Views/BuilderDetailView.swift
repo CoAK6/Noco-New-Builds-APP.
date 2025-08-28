@@ -336,11 +336,11 @@ struct CommunityCardView: View {
                 Text(community.status.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(community.status == .activelySelling ? .green : .orange)
+                    .foregroundColor(community.status == .active ? .green : .orange)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(
-                        (community.status == .activelySelling ? Color.green : Color.orange).opacity(0.1)
+                        (community.status == .active ? Color.green : Color.orange).opacity(0.1)
                     )
                     .cornerRadius(8)
             }
