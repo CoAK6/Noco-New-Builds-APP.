@@ -87,29 +87,62 @@ class AuthenticationService: ObservableObject {
             
             // Check if this is a returning user with complete profile
             if let existingUser = getExistingUser(email: email) {
+                // Update last login time
+                let updatedUser = User(
+                    id: existingUser.id,
+                    email: existingUser.email,
+                    firstName: existingUser.firstName,
+                    lastName: existingUser.lastName,
+                    phone: existingUser.phone,
+                    profileImageUrl: existingUser.profileImageUrl,
+                    createdAt: existingUser.createdAt,
+                    lastLoginAt: Date(), // Update login time
+                    preferences: existingUser.preferences,
+                    leadData: existingUser.leadData
+                )
+                
                 await MainActor.run {
-                    currentUser = existingUser
-                    authState = .authenticated(existingUser)
+                    currentUser = updatedUser
+                    authState = .authenticated(updatedUser)
                     isAuthenticated = true
                     isLoading = false
                 }
                 
-                // Store credentials
-                keychain.storeUser(existingUser)
+                // Store updated user credentials
+                keychain.storeUser(updatedUser)
                 
             } else {
-                // New user or user without complete profile
-                let partialUser = PartialUser(
-                    id: UUID().uuidString,
-                    email: email,
-                    firstName: nil,
-                    lastName: nil,
-                    profileImageUrl: nil
-                )
-                
-                await MainActor.run {
-                    authState = .registrationRequired(partialUser: partialUser)
-                    isLoading = false
+                // New user or user without complete profile - check if we have a partial user stored
+                if let storedUser = keychain.getStoredUser(),
+                   storedUser.email.lowercased() == email.lowercased(),
+                   !storedUser.isProfileComplete {
+                    // User exists but profile is incomplete
+                    let partialUser = PartialUser(
+                        id: storedUser.id,
+                        email: storedUser.email,
+                        firstName: storedUser.firstName,
+                        lastName: storedUser.lastName,
+                        profileImageUrl: storedUser.profileImageUrl
+                    )
+                    
+                    await MainActor.run {
+                        authState = .registrationRequired(partialUser: partialUser)
+                        isLoading = false
+                    }
+                } else {
+                    // Completely new user
+                    let partialUser = PartialUser(
+                        id: UUID().uuidString,
+                        email: email,
+                        firstName: nil,
+                        lastName: nil,
+                        profileImageUrl: nil
+                    )
+                    
+                    await MainActor.run {
+                        authState = .registrationRequired(partialUser: partialUser)
+                        isLoading = false
+                    }
                 }
             }
             
@@ -201,8 +234,24 @@ class AuthenticationService: ObservableObject {
     }
     
     private func getExistingUser(email: String) -> User? {
-        // In a real app, this would check your backend
-        // For now, return nil to force profile completion
+        // Check if we have a stored user with this email
+        if let storedUser = keychain.getStoredUser() {
+            print("DEBUG: Found stored user - Email: \(storedUser.email), Profile Complete: \(storedUser.isProfileComplete)")
+            
+            if storedUser.email.lowercased() == email.lowercased() && storedUser.isProfileComplete {
+                print("DEBUG: Existing user found and profile is complete")
+                return storedUser
+            } else {
+                print("DEBUG: Stored user found but either email doesn't match or profile incomplete")
+                print("DEBUG: Stored email: \(storedUser.email), Sign-in email: \(email)")
+                print("DEBUG: Profile complete: \(storedUser.isProfileComplete)")
+            }
+        } else {
+            print("DEBUG: No stored user found in keychain")
+        }
+        
+        // In a real app, this would also check your backend API
+        // For now, only check locally stored users
         return nil
     }
     
