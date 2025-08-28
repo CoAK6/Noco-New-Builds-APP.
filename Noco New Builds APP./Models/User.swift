@@ -292,28 +292,6 @@ enum AuthenticationState: Equatable {
     }
 }
 
-struct PartialUser {
-    let id: String
-    let email: String
-    let firstName: String?
-    let lastName: String?
-    let profileImageUrl: String?
-    
-    func toCompleteUser(with registrationData: UserRegistrationData) -> User {
-        return User(
-            id: id,
-            email: registrationData.email,
-            firstName: registrationData.firstName,
-            lastName: registrationData.lastName,
-            phone: registrationData.phone,
-            profileImageUrl: profileImageUrl,
-            createdAt: Date(),
-            lastLoginAt: Date(),
-            preferences: UserPreferences(),
-            leadData: LeadData(leadId: UUID().uuidString)
-        )
-    }
-}
 
 // MARK: - Sample Data for Development
 extension User {
