@@ -324,7 +324,7 @@ struct CommunityCardView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        Text("\(community.city), \(community.state) \(community.zipCode)")
+                        Text(community.city)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
