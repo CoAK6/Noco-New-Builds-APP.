@@ -58,8 +58,8 @@ struct BuilderDetailView: View {
                                 .foregroundColor(.blue)
                                 .fontWeight(.semibold)
                             
-                            if let websiteUrl = builder.websiteUrl {
-                                Link("Visit Website", destination: URL(string: websiteUrl)!)
+                            if let website = builder.website {
+                                Link("Visit Website", destination: URL(string: website)!)
                                     .font(.caption)
                                     .foregroundColor(.blue)
                             }
