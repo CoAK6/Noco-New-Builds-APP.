@@ -208,7 +208,7 @@ struct SignUpView: View {
                 }
             }
         }
-        .onChange(of: authService.authState) { newState in
+        .onChange(of: authService.authState) { oldState, newState in
             if case .registrationRequired = newState {
                 dismiss()
             }

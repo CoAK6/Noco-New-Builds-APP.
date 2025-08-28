@@ -158,7 +158,7 @@ struct SignInView: View {
         } message: {
             Text("Enter your email address to receive a password reset link.")
         }
-        .onChange(of: authService.authState) { newState in
+        .onChange(of: authService.authState) { oldState, newState in
             if case .authenticated = newState {
                 dismiss()
             } else if case .registrationRequired = newState {
