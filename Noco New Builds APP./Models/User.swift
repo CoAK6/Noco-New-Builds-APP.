@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Identifiable, Codable {
+struct User: Identifiable, Codable, Equatable {
     let id: String
     let email: String
     let firstName: String?
@@ -60,6 +60,30 @@ struct User: Identifiable, Codable {
         }
         
         return phone
+    }
+}
+
+// MARK: - Partial User (for incomplete registration)
+struct PartialUser: Identifiable, Codable, Equatable {
+    let id: String
+    let email: String
+    let firstName: String?
+    let lastName: String?
+    let profileImageUrl: String?
+    
+    func toCompleteUser(with registrationData: UserRegistrationData) -> User {
+        return User(
+            id: id,
+            email: registrationData.email,
+            firstName: registrationData.firstName,
+            lastName: registrationData.lastName,
+            phone: registrationData.phone,
+            profileImageUrl: profileImageUrl,
+            createdAt: Date(),
+            lastLoginAt: Date(),
+            preferences: UserPreferences(),
+            leadData: LeadData(leadId: UUID().uuidString, source: registrationData.source)
+        )
     }
 }
 
@@ -210,7 +234,7 @@ struct CRMLeadData: Codable {
 }
 
 // MARK: - Authentication State
-enum AuthenticationState {
+enum AuthenticationState: Equatable {
     case unauthenticated
     case authenticating
     case authenticated(User)
