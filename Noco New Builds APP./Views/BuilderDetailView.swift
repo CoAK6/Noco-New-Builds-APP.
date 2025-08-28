@@ -365,10 +365,10 @@ struct CommunityCardView: View {
             }
             
             // Amenities
-            if !community.amenities.isEmpty {
+            if let amenities = community.amenities, !amenities.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(community.amenities.prefix(5), id: \.self) { amenity in
+                        ForEach(amenities.prefix(5), id: \.self) { amenity in
                             Text(amenity)
                                 .font(.caption)
                                 .padding(.horizontal, 8)
