@@ -165,7 +165,7 @@ struct OverviewTabView: View {
             }
             
             // Key Features
-            if let features = builder.features, !features.isEmpty {
+            if !builder.specialties.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Key Features")
                         .font(.headline)
@@ -175,7 +175,7 @@ struct OverviewTabView: View {
                         GridItem(.flexible()),
                         GridItem(.flexible())
                     ], spacing: 8) {
-                        ForEach(features, id: \.self) { feature in
+                        ForEach(builder.specialties, id: \.self) { feature in
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
