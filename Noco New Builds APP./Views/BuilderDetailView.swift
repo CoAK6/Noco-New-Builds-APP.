@@ -152,13 +152,13 @@ struct OverviewTabView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // Description
-            if let description = builder.description {
+            if !builder.description.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("About")
                         .font(.headline)
                         .fontWeight(.semibold)
                     
-                    Text(description)
+                    Text(builder.description)
                         .font(.body)
                         .foregroundColor(.secondary)
                 }
