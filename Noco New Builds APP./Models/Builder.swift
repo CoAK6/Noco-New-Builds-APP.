@@ -160,6 +160,10 @@ struct Builder: Identifiable, Codable {
         return Array(Set(allHomeTypes)).sorted { $0.displayName < $1.displayName }
     }
     
+    var activeCommunities: Int {
+        return communities.filter { $0.status == .active }.count
+    }
+    
     // MARK: - Search & Filter Support
     func matches(searchText: String) -> Bool {
         guard !searchText.isEmpty else { return true }
