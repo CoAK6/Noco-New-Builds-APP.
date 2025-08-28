@@ -341,55 +341,7 @@ struct ProfileView: View {
 }
 
 // MARK: - Authentication Placeholder Views
-struct SignInView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                Text("Sign In")
-                    .font(.title)
-                    .padding()
-                
-                Text("Sign in functionality coming soon...")
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-    }
-}
 
-struct SignUpView: View {
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                Text("Create Account")
-                    .font(.title)
-                    .padding()
-                
-                Text("Registration functionality coming soon...")
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-    }
-}
 
 
 #Preview {
