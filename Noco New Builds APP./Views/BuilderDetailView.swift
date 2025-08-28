@@ -11,6 +11,7 @@ import MapKit
 struct BuilderDetailView: View {
     let builder: Builder
     @State private var selectedTab: DetailTab = .overview
+    @ObservedObject private var comparisonService = ComparisonService.shared
     @Environment(\.dismiss) var dismiss
     
     enum DetailTab: String, CaseIterable {
@@ -136,12 +137,28 @@ struct BuilderDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(action: { /* Add to favorites */ }) {
-                    Image(systemName: "heart")
-                        .foregroundColor(.blue)
+                HStack {
+                    // Comparison Button
+                    Button(action: { 
+                        comparisonService.toggleComparison(for: builder)
+                    }) {
+                        Image(systemName: comparisonService.isInComparison(builder) ? "checkmark.circle.fill" : "plus.circle")
+                            .foregroundColor(comparisonService.isInComparison(builder) ? .green : .blue)
+                    }
+                    .disabled(!comparisonService.canAddMore && !comparisonService.isInComparison(builder))
+                    
+                    // Favorites Button
+                    Button(action: { /* Add to favorites */ }) {
+                        Image(systemName: "heart")
+                            .foregroundColor(.blue)
+                    }
                 }
             }
         }
+        .overlay(
+            ComparisonFloatingButton(),
+            alignment: .bottomTrailing
+        )
     }
 }
 

@@ -179,6 +179,10 @@ struct BuildersListView: View {
             }
             .navigationTitle("Builders")
             .navigationBarTitleDisplayMode(.large)
+            .overlay(
+                ComparisonFloatingButton(),
+                alignment: .bottomTrailing
+            )
             .sheet(isPresented: $showingFilters) {
                 FilterView(
                     selectedCategories: $selectedCategories,
@@ -230,6 +234,7 @@ struct SearchBar: View {
 // MARK: - Builder Card View
 struct BuilderCardView: View {
     let builder: Builder
+    @ObservedObject private var comparisonService = ComparisonService.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -270,9 +275,16 @@ struct BuilderCardView: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                // Comparison Button
+                Button(action: { 
+                    comparisonService.toggleComparison(for: builder)
+                }) {
+                    Image(systemName: comparisonService.isInComparison(builder) ? "checkmark.circle.fill" : "plus.circle")
+                        .font(.title3)
+                        .foregroundColor(comparisonService.isInComparison(builder) ? .green : .blue)
+                }
+                .disabled(!comparisonService.canAddMore && !comparisonService.isInComparison(builder))
+                .opacity((!comparisonService.canAddMore && !comparisonService.isInComparison(builder)) ? 0.5 : 1.0)
             }
             
             // Communities info
