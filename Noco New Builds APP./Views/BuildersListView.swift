@@ -289,8 +289,8 @@ struct BuilderCardView: View {
                         
                         Spacer()
                         
-                        if let activeCommunities = builder.activeCommunities, activeCommunities > 0 {
-                            Text("\(activeCommunities) active")
+                        if builder.activeCommunities > 0 {
+                            Text("\(builder.activeCommunities) active")
                                 .font(.caption)
                                 .foregroundColor(.green)
                                 .padding(.horizontal, 6)

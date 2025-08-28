@@ -76,10 +76,10 @@ struct BuilderDetailView: View {
                             label: "Communities"
                         )
                         
-                        if let activeCommunities = builder.activeCommunities {
+                        if builder.activeCommunities > 0 {
                             StatView(
                                 icon: "checkmark.circle.fill",
-                                value: "\(activeCommunities)",
+                                value: "\(builder.activeCommunities)",
                                 label: "Active"
                             )
                         }
