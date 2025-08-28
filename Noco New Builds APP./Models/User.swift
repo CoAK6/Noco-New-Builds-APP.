@@ -88,7 +88,7 @@ struct PartialUser: Identifiable, Codable, Equatable {
 }
 
 // MARK: - User Preferences
-struct UserPreferences: Codable {
+struct UserPreferences: Codable, Equatable {
     var notifications: NotificationPreferences
     var search: SearchPreferences
     var privacy: PrivacyPreferences
@@ -100,7 +100,7 @@ struct UserPreferences: Codable {
     }
 }
 
-struct NotificationPreferences: Codable {
+struct NotificationPreferences: Codable, Equatable {
     var pushNotifications: Bool = true
     var emailNotifications: Bool = true
     var newIncentives: Bool = true
@@ -113,7 +113,7 @@ struct NotificationPreferences: Codable {
     }
 }
 
-struct SearchPreferences: Codable {
+struct SearchPreferences: Codable, Equatable {
     var defaultPriceRange: ClosedRange<Int>
     var preferredLocations: [String]
     var preferredBuilderTypes: [BuilderType]
@@ -127,9 +127,18 @@ struct SearchPreferences: Codable {
         self.preferredHomeTypes = []
         self.saveSearchHistory = true
     }
+    
+    static func == (lhs: SearchPreferences, rhs: SearchPreferences) -> Bool {
+        return lhs.defaultPriceRange.lowerBound == rhs.defaultPriceRange.lowerBound &&
+               lhs.defaultPriceRange.upperBound == rhs.defaultPriceRange.upperBound &&
+               lhs.preferredLocations == rhs.preferredLocations &&
+               lhs.preferredBuilderTypes == rhs.preferredBuilderTypes &&
+               lhs.preferredHomeTypes == rhs.preferredHomeTypes &&
+               lhs.saveSearchHistory == rhs.saveSearchHistory
+    }
 }
 
-struct PrivacyPreferences: Codable {
+struct PrivacyPreferences: Codable, Equatable {
     var shareDataWithPartners: Bool = false
     var allowAnalytics: Bool = true
     var allowLocationTracking: Bool = true
@@ -137,7 +146,7 @@ struct PrivacyPreferences: Codable {
 }
 
 // MARK: - Lead Data (matches web app CRM integration)
-struct LeadData: Codable {
+struct LeadData: Codable, Equatable {
     let leadId: String
     let source: String
     let createdAt: Date
@@ -159,7 +168,7 @@ struct LeadData: Codable {
     }
 }
 
-struct ComparisonRecord: Identifiable, Codable {
+struct ComparisonRecord: Identifiable, Codable, Equatable {
     let id: String
     let builderIds: [String]
     let comparisonCriteria: String?
@@ -175,7 +184,7 @@ struct ComparisonRecord: Identifiable, Codable {
     }
 }
 
-struct SearchRecord: Identifiable, Codable {
+struct SearchRecord: Identifiable, Codable, Equatable {
     let id: String
     let searchText: String
     let filters: String // JSON encoded filters
