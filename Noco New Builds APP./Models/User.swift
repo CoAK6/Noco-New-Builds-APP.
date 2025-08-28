@@ -187,21 +187,26 @@ struct UserRegistrationData {
     }
     
     // Convert to CRM lead format (matches web app API)
-    func toCRMLeadData() -> [String: Any] {
-        var data: [String: Any] = [
-            "firstName": firstName,
-            "lastName": lastName,
-            "email": email,
-            "source": source,
-            "timestamp": ISO8601DateFormatter().string(from: Date())
-        ]
-        
-        if let phone = phone, !phone.isEmpty {
-            data["phone"] = phone
-        }
-        
-        return data
+    func toCRMLeadData() -> CRMLeadData {
+        return CRMLeadData(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            source: source,
+            timestamp: ISO8601DateFormatter().string(from: Date())
+        )
     }
+}
+
+// MARK: - CRM Lead Data (Codable for API)
+struct CRMLeadData: Codable {
+    let firstName: String
+    let lastName: String
+    let email: String
+    let phone: String?
+    let source: String
+    let timestamp: String
 }
 
 // MARK: - Authentication State
