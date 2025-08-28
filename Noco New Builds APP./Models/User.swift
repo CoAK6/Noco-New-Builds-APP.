@@ -275,6 +275,21 @@ enum AuthenticationState: Equatable {
             return nil
         }
     }
+    
+    static func == (lhs: AuthenticationState, rhs: AuthenticationState) -> Bool {
+        switch (lhs, rhs) {
+        case (.unauthenticated, .unauthenticated):
+            return true
+        case (.authenticating, .authenticating):
+            return true
+        case (.authenticated(let lhsUser), .authenticated(let rhsUser)):
+            return lhsUser == rhsUser
+        case (.registrationRequired(let lhsPartial), .registrationRequired(let rhsPartial)):
+            return lhsPartial == rhsPartial
+        default:
+            return false
+        }
+    }
 }
 
 struct PartialUser {
