@@ -75,7 +75,7 @@ struct Incentive: Identifiable, Codable {
         if amount > 0 {
             return "$\(amount.formatted(.number.notation(.compactName)))"
         } else if let percentage = percentage {
-            return "\(percentage, specifier: "%.1f")%"
+            return "\(percentage.formatted(.number.precision(.fractionLength(1))))%"
         } else {
             return "Special Offer"
         }
