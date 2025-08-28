@@ -261,31 +261,29 @@ struct IncentivesTabView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             if let incentives = builder.currentIncentives, !incentives.isEmpty {
-                ForEach(incentives, id: \.self) { incentive in
-                    HStack {
-                        Image(systemName: "tag.fill")
-                            .foregroundColor(.orange)
+                HStack {
+                    Image(systemName: "tag.fill")
+                        .foregroundColor(.orange)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(incentives)
+                            .font(.body)
+                            .fontWeight(.medium)
                         
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(incentive)
-                                .font(.body)
-                                .fontWeight(.medium)
-                            
-                            Text("Contact builder for details")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
+                        Text("Contact builder for details")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
             } else {
                 VStack {
                     Image(systemName: "tag.circle")
